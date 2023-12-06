@@ -1,0 +1,2 @@
+# Kominek
+PJATK BYT Project
