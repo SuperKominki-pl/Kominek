@@ -3,8 +3,12 @@ from flask import Flask
 app = Flask(__name__)
 
 
-@app.route('/')
-def hello_world():
+@app.route('/<name>')
+def hello_world(name):
+    """
+    @:param name -> name of user
+    :return: Hello World!
+    """
     return 'Hello World!'
 
 
