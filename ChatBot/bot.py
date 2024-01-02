@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 import openai
+import gradio as gr
+
 
 app = Flask(__name__)
 
-openai.api_key = "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"
+openai.api_key = ""
 
 system_message = """You are customer support for 
 problems with using the electric fireplace management application. You are helping
@@ -11,30 +13,43 @@ customers with this chimney """
 
 
 @app.route('/chat', methods=['Post'])
-def chat(user_message, history):
-    max_history_length = 20
+def responseGPT(user_message, history):
+    max_history_length = 16
     history_openai_format = []
-    data = request.get_json()
 
     if len(history) >= max_history_length:
-        history = history[-(max_history_length - 1)]
+        history = history[-(max_history_length - 1):]
 
-    user_message = data['user_message']
+    for human, assistant in history:
+        history_openai_format.append({"role": "user", "content": human})
+        history_openai_format.append({"role": "assistant", "content": assistant})
+    history_openai_format.append({"role": "user", "content": user_message})
+    history_openai_format.insert(0, {"role": "system", "content": system_message})
 
-    prompt = f"User: {user_message}\nChatBot:"
-
-    response = openai.Completion.create(
-        engine="gpt-4",
+    response = openai.ChatCompletion.create(
+        model='gpt-4',
         messages=history_openai_format,
         temperature=0.5,
         stop=None,
         stream=True
     )
 
-    chatbot_response = response.choices[0].text.strip()
+    partial_message = ""
+    for chunk in response:
+        if len(chunk['choices'][0]['delta']) != 0:
+            partial_message = partial_message + chunk['choices'][0]['delta']['content']
+            yield partial_message
 
-    return jsonify({'chatbot_response': chatbot_response})
 
+custom_chatbot = gr.Chatbot([(None, "Hello. I'm your AI customer support. If you need help, do not be afraid to talk "
+                                    "with me!")], elem_id="chatbot", label="Chatbot")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+with gr.Blocks() as demo:
+    # with gr.Row():
+    # gr.ChatInterface(fn=responseGPT)
+    gr.ChatInterface(
+        fn=responseGPT,
+        chatbot=custom_chatbot
+    )
+
+demo.queue().launch(share=True, debug=True)

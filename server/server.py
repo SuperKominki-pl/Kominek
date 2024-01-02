@@ -8,8 +8,9 @@ CORS(app)
 @app.route("/api/home", methods=["GET"])
 def return_home():
     return jsonify({
-    "message": "seewruuk to kozak"
+        "message": "seewruuk to kozak"
     })
+
 
 if __name__ == "__main__":
     app.run(port=8080)
