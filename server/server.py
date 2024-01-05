@@ -5,7 +5,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/api/home", methods=["GET"])
+@app.route("/api/home", methods=["POST"])
 def return_home():
     return jsonify({
     "message": "seewruuk to kozak"
