@@ -2,16 +2,21 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+
+#TODO database simulation
+#TODO database handle
+
 # Dane symulujące informacje o kominkach
 fireplaces = [
     {
-        "id": 1,
-        "temperature": 25,
-        "color": "red",
-        "mode": "normal",
-        "status": True
+        "id": 1,  # id kominka
+        "temperature": 25,  # temperatura w stopniach Celcjusza
+        "color": "#FF0000",  # kolor w formacje heksadecymalnym
+        "mode": "normal",  # tryb animacji kominka
+        "status": True  # status kominka(włączony/wyłączony)
     },
 ]
+
 
 @app.route('/info/<int:fireplace_id>', methods=['GET'])
 def get_info(fireplace_id):
@@ -85,6 +90,7 @@ def change_color(fireplace_id):
     fireplace['color'] = new_color
     return jsonify({"message": "Zmieniono kolor"}), 200
 
+
 @app.route('/change_mode/<int:fireplace_id>', methods=['POST'])
 def change_mode(fireplace_id):
     """
@@ -106,6 +112,7 @@ def change_mode(fireplace_id):
 
     fireplace['mode'] = data['mode']
     return jsonify({"message": "Zmieniono tryb"}), 200
+
 
 @app.route('/change_status/<int:fireplace_id>', methods=['POST'])
 def change_status(fireplace_id):
@@ -130,6 +137,7 @@ def change_status(fireplace_id):
     fireplace['status'] = bool(data['status'])
     return jsonify({"message": "Zmieniono status"}), 200
 
+
 @app.route('/add_fireplace', methods=['POST'])
 def add_fireplace():
     """
@@ -152,6 +160,7 @@ def add_fireplace():
     fireplaces.append(new_fireplace)
     return jsonify({"message": "Dodano kominek", "id": new_fireplace['id']}), 201
 
+
 def find_fireplace(fireplace_id):
     """
     Funkcja znajdująca kominek w wektorze
@@ -164,6 +173,7 @@ def find_fireplace(fireplace_id):
             return fireplace
     return None
 
+
 def is_valid_color_format(color):
     """
     Funkcja sprawdzająca czy podany kolor jest w formacje hexadecymalnym #fff lub #ffffff
@@ -171,6 +181,7 @@ def is_valid_color_format(color):
     :return: bool
     """
     return re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
