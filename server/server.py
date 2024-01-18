@@ -24,7 +24,21 @@ class Fireplace(db.Model):
         }
 
 
-# Create tables based on the defined models
+class EnergyUsage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fireplace_id = db.Column(db.Integer, nullable=False)
+    energy_consumed = db.Column(db.Float)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "fireplace_id": self.fireplace_id,
+            "energy_consumed": self.energy_consumed,
+            "timestamp": self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+
 with app.app_context():
     db.create_all()
 
@@ -175,6 +189,56 @@ def add_fireplace():
     db.session.add(new_fireplace)
     db.session.commit()
     return jsonify({"message": "Fireplace added", "id": new_fireplace.id}), 201
+
+
+@app.route('/add_energy_usage', methods=['POST'])
+def add_energy_usage():
+    """
+    Funkcja dodająca nowy wpis do tabeli zużycia energii.
+    :return: JSON w formacie: "error"/"message": "treść"
+             kod HTTP
+    """
+    if not request.is_json:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    data = request.get_json()
+    new_energy_usage = EnergyUsage(
+        fireplace_id=data.get('fireplace_id'),
+        energy_consumed=data.get('energy_consumed')
+    )
+
+    db.session.add(new_energy_usage)
+    db.session.commit()
+    return jsonify({"message": "Energy usage added", "id": new_energy_usage.id}), 201
+
+
+@app.route('/get_energy_usage/<int:fireplace_id>/<string:time_interval>', methods=['GET'])
+def get_energy_usage(fireplace_id, time_interval):
+    """
+    Funkcja zwracająca zużycie energii kominka z podanym id w podanym interwale czasowym.
+    :param fireplace_id: id kominka.
+    :param time_interval: interwał czasowy: należący do ['days', 'weeks', 'months'].
+    :return: json ze zużyciem energii.
+    """
+
+    valid_intervals = ['days', 'weeks', 'months']
+
+    if time_interval not in valid_intervals:
+        return jsonify({"error": "Invalid time interval"}), 400
+
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(days=7)  # Default: last 7 days
+
+    if time_interval == 'weeks':
+        start_date = end_date - timedelta(weeks=4)  # Last 4 weeks
+    elif time_interval == 'months':
+        start_date = end_date - timedelta(days=365)  # Last 12 months
+
+    energy_data = EnergyUsage.query.filter_by(fireplace_id=fireplace_id).filter(
+        EnergyUsage.timestamp.between(start_date, end_date)
+    ).all()
+
+    return jsonify([entry.to_dict() for entry in energy_data])
 
 
 if __name__ == '__main__':
