@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import * as bot from './ChatBot/bot.py';
 
 const ChatbotComponent = () => {
   const [userMessage, setUserMessage] = useState('');

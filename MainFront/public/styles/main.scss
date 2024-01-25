@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "variables";
+
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: $backgroundColor;
+    color: #fff;
+    font-family: var(--font-pretendard);
+}
+
+*::-webkit-scrollbar{
+    width: 0;
+    display: none;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 100px);
+    background-color: $backgroundColor;
+}
+
+.messages-container {
+    flex-grow: 1;
+    overflow-y: scroll;
+    padding-inline: 15px;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    background-color: #13131A;
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+.message {
+    margin-bottom: 10px;
+    padding-block: 16px;
+    padding-inline: 12px;
+    border-radius: 12px;
+    word-wrap: break-word;
+}
+.nav-icon{
+    filter: invert(99%) sepia(100%) saturate(0%) hue-rotate(254deg) brightness(102%) contrast(105%);
+}
+
+.message.user {
+    align-self: flex-end;
+    background-color: $backgroundColor;
+    border: 1px solid #292936;
+}
+
+.message.other {
+    align-self: flex-start;
+    background-color: #5a5acc;
+}
+
+.chat-container input {
+    //border: none;
+    //padding: 16px;
+    //width: 100%;
+    //background: #292936;
+    //border-radius: 12px;
+
+    &:focus {
+        outline: none;
+    }
+
+}
