@@ -1,9 +1,16 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from datetime import *
+import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fireplaces.db'
+
+# Konfiguracja SQLAlchemy
+user = 'fireplace'
+password = 'I<KrWL;Ii80Ce9j'
+host = 'localhost'
+database = 'fireplacesdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{user}:{password}@{host}/{database}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
@@ -28,7 +35,7 @@ class EnergyUsage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fireplace_id = db.Column(db.Integer, nullable=False)
     energy_consumed = db.Column(db.Float)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime)
 
     def to_dict(self):
         return {
@@ -59,7 +66,7 @@ def get_info(fireplace_id):
     if fireplace:
         return jsonify(fireplace.to_dict())
     else:
-        return jsonify({"error": f"Fireplace {fireplace_id} not found"}), 404
+        return jsonify({"error": f"Fireplace {fireplace_id}{fireplace} not found"}), 404
 
 
 @app.route('/change_temperature/<int:fireplace_id>', methods=['POST'])
@@ -88,21 +95,6 @@ def change_temperature(fireplace_id):
         return jsonify({"message": "Temperature changed"}), 200
     except ValueError:
         return jsonify({"error": "Invalid 'temperature'"}), 400
-
-
-def is_valid_color_format(color):
-    """
-    Sprawdza, czy kolor ma poprawny format w postaci '#RRGGBB' lub '#RGB'.
-    """
-    if not isinstance(color, str):
-        return False
-
-    if len(color) == 7 and color[0] == '#' and all(c.isdigit() or c.lower() in 'abcdef' for c in color[1:]):
-        return True
-    elif len(color) == 4 and color[0] == '#' and all(c.isdigit() or c.lower() in 'abcdef' for c in color[1:]):
-        return True
-
-    return False
 
 
 @app.route('/change_color/<int:fireplace_id>', methods=['POST'])
@@ -257,4 +249,4 @@ def get_energy_usage(fireplace_id, time_interval):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='51.68.155.42')
