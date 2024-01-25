@@ -1,0 +1,52 @@
+$backgroundColor: #13131A;
+$accentColor: #18E8B7;
+$backgroundLightColor: #1E1E28;
+$backgroundDarkColor: #0C0C10;
+$greyTextColor: #9198A2;
+
+
+
+$red: red;
+$orange: orange;
+$yellow: yellow;
+$lime: lime;
+$green: green;
+$Turquoise: turquoise;
+$Cyan: cyan;
+$Blue: blue;
+$Violet: violet;
+$Magenta: magenta;
+$Crimson: crimson;
+
+
+.rainbow-range, .color-range{
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+
+.rainbow-range::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(to right, $red, $orange, $yellow, $lime, $green,$Turquoise,$Cyan,$Blue,$Violet,$Magenta,$Crimson,$red);
+  //border-radius: 15px;
+}
+
+
+
+.color-range::-webkit-slider-runnable-track{
+  width: 100%;
+  height: 8px;
+  //background: red;
+  border-radius: 15px;
+}
+
+.rainbow-range::-webkit-slider-thumb, .color-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 17px;
+  width: 17px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  margin-top: -5px;
+}
