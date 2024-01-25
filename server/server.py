@@ -97,6 +97,21 @@ def change_temperature(fireplace_id):
         return jsonify({"error": "Invalid 'temperature'"}), 400
 
 
+def is_valid_color_format(color):
+    """
+    Sprawdza, czy kolor ma poprawny format w postaci '#RRGGBB' lub '#RGB'.
+    """
+    if not isinstance(color, str):
+        return False
+
+    if len(color) == 7 and color[0] == '#' and all(c.isdigit() or c.lower() in 'abcdef' for c in color[1:]):
+        return True
+    elif len(color) == 4 and color[0] == '#' and all(c.isdigit() or c.lower() in 'abcdef' for c in color[1:]):
+        return True
+
+    return False
+
+
 @app.route('/change_color/<int:fireplace_id>', methods=['POST'])
 def change_color(fireplace_id):
     """
