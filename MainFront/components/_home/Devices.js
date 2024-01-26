@@ -26,6 +26,9 @@ const SetNameAndDescription = () => {
     }, [showSetNameAndDescComponent.status]);
 
 
+
+
+
     return (
         <>
             <AnimatePresence>
@@ -122,6 +125,31 @@ export default function Devices() {
     } = useContext(StateContext)
 
 
+
+    const handleChangeStatus = async (index, status) => {
+
+        changeDeviceStatus(index - 1);
+
+        const response = await (await fetch(`/api/changeStatus`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                deviceId: index,
+                status: status
+            })
+        })).json();
+
+        if (response.status === "ok") {
+            console.log("Status changed");
+        }else{
+            console.log("Something went wrong");
+        }
+
+    }
+
+
     return (
         <>
 
@@ -161,7 +189,11 @@ export default function Devices() {
                                                            checked={
                                                                item.status === 1
                                                            }
-                                                           onChange={() => changeDeviceStatus(index)}
+                                                           onChange={
+                                                               () => handleChangeStatus(index + 1 , item.status)
+
+
+                                                    }
                                                            value={
                                                                item.status === 1
                                                            }

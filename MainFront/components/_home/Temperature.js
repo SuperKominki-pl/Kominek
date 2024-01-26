@@ -72,6 +72,34 @@ const TemperatureControl = () => {
         return minTemperature + Math.round(temp) / 2;
     };
 
+    useEffect(() => {
+
+        const timeout = setTimeout(() => {
+            const response = fetch(`/api/changeTemperature`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    deviceId: selectedDevice + 1,
+                    temperature: temperature,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }, 1500)
+
+        return () => clearTimeout(timeout)
+
+    }, [temperature]);
+
+
+
     const handleMouseDown = (event) => {
         setIsDragging(true)
         const angle = calculateAngle(event.clientX, event.clientY);
@@ -196,18 +224,6 @@ const TemperatureControl = () => {
                             strokeWidth={"5"}
 
                     />
-                    {/*<text x="50%" y="50%" textAnchor="middle" dy="-1.2rem" fill={"#fff"} fontSize={"12px"}*/}
-                    {/*>*/}
-                    {/*    Temperatura*/}
-                    {/*</text>*/}
-                    {/*<text x="50%" y="50%" textAnchor="middle" dy="1rem" dx="-0px" fill={"#fff"} fontSize={"38px"}>*/}
-                    {/*    {*/}
-                    {/*        temperature*/}
-                    {/*    }°C*/}
-                    {/*</text>*/}
-                    {/*<text x="50%" y="50%" textAnchor="middle" dy="0rem" dx="2.5rem" fill={"#fff"} fontSize={"19px"}>*/}
-                    {/*    °C*/}
-                    {/*</text>*/}
                 </svg>
                 <div className={"absolute top-[103px] flex flex-col"}>
                     <p>Temperatura</p>

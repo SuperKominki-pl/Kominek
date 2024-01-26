@@ -7,6 +7,7 @@ import {StateContext} from "@/context/StateContext";
 export default function ColorPresets() {
 
     const {devices, selectedDevice, setDevices} = useContext(StateContext);
+    const [convertedColor, setConvertedColor] = useState("");
 
     const initialState = [
         {
@@ -51,6 +52,7 @@ export default function ColorPresets() {
         }
     ]
     const [presets, setPresets] = useState(initialState)
+    const [mode, setMode] = useState("");
 
     useEffect(() => {
 
@@ -71,6 +73,8 @@ export default function ColorPresets() {
         let newDevices = [...devices];
         newDevices[selectedDevice].colorPreset = presets[index];
         setDevices(newDevices);
+
+        setMode(presets[index].name);
     }
 
     const handleHueChange = (e) => {
@@ -100,8 +104,75 @@ export default function ColorPresets() {
             const slider = document.querySelector("#color-slider");
             const hue = devices[selectedDevice].colorPreset.settings.hue;
             slider.style.background = `hsl(${hue}, 100%, ${devices[selectedDevice].colorPreset.settings.lighting}%)`;
+
+            const hslToHex = (h, s, l) => {
+                l /= 100;
+                const a = s * Math.min(l, 1 - l) / 100;
+                const f = n => {
+                    const k = (n + h / 30) % 12;
+                    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                    return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+                };
+                return `#${f(0)}${f(8)}${f(4)}`;
+            }
+            const hex = hslToHex(hue, 100, devices[selectedDevice].colorPreset.settings.lighting);
+            setConvertedColor(hex)
         }
         , [devices[selectedDevice].colorPreset.settings.hue, devices[selectedDevice].colorPreset.settings.lighting])
+
+
+    useEffect(() => {
+
+        const timeout = setTimeout(() => {
+            const response = fetch(`/api/changeColor`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    deviceId: selectedDevice + 1,
+                    color: convertedColor
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }, 1500)
+
+        return () => clearTimeout(timeout)
+
+    }, [convertedColor]);
+
+    // useEffect(() => {
+    //
+    //     const timeout = setTimeout(() => {
+    //         const response = fetch(`/api/changeMode`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 deviceId: selectedDevice + 1,
+    //                 mode: mode
+    //             }),
+    //         })
+    //             .then((response) => response.json())
+    //             .then((data) => {
+    //                 console.log('Success:', data);
+    //             })
+    //             .catch((error) => {
+    //                 console.error('Error:', error);
+    //             });
+    //     }, 1500)
+    //
+    //     return () => clearTimeout(timeout)
+    //
+    // }, [mode]);
+
 
 
     return (
@@ -119,9 +190,7 @@ export default function ColorPresets() {
                                          className={`flex-1 flex justify-center items-center flex-col gap-3 bg-[#202129] py-5 rounded-md cursor-pointer transition-all ${
                                              item.isSelected ? "border-2 border-[#18E8B7] bg-[#0F0F15] shadow-2xl" : "border-2 border-[#3B3E50]"
                                          }`}>
-                                        {/*<Image src={*/}
-                                        {/*    item.icon ? item.icon : PlaceholderIcon*/}
-                                        {/*} alt={"Icon"} width={18} height={18}/>*/}
+
                                         <p className={"text-[12px]"}>
                                             {
                                                 item.title
