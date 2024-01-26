@@ -7,6 +7,15 @@ import openai
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://fireplace:I<KrWL;Ii80Ce9j@localhost/fireplacesdb'
+
+app = Flask(__name__)
+
+# Konfiguracja SQLAlchemy
+user = 'fireplace'
+password = 'I<KrWL;Ii80Ce9j'
+host = 'localhost'
+database = 'fireplacesdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{user}:{password}@{host}/{database}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -83,7 +92,7 @@ class EnergyUsage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fireplace_id = db.Column(db.Integer, nullable=False)
     energy_consumed = db.Column(db.Float)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime)
 
     def to_dict(self):
         return {
@@ -114,7 +123,7 @@ def get_info(fireplace_id):
     if fireplace:
         return jsonify(fireplace.to_dict())
     else:
-        return jsonify({"error": f"Fireplace {fireplace_id} not found"}), 404
+        return jsonify({"error": f"Fireplace {fireplace_id}{fireplace} not found"}), 404
 
 
 @app.route('/change_temperature/<int:fireplace_id>', methods=['POST'])
@@ -315,4 +324,6 @@ app.register_blueprint(chatbot_blueprint, url_prefix='/api/chatbot')
 app.register_blueprint(backend_blueprint, url_prefix='/api/backend')
 
 if __name__ == '__main__':
+
     app.run(host='51.68.155.42', debug=True)
+
