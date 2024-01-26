@@ -1,0 +1,30 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@next/font": "^14.0.4",
+    "chart.js": "^4.4.1",
+    "framer-motion": "^10.17.9",
+    "js-cookie": "^3.0.5",
+    "next": "^14.0.4",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-circular-input": "^0.2.4",
+    "react-dom": "^18.2.0",
+    "sass": "^1.69.7"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0"
+  }
+}
