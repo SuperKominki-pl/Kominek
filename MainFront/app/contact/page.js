@@ -38,8 +38,14 @@ export default function Page() {
     try {
         // Wyślij wiadomość do chatbota
         const response = await axios.post('http://51.68.155.42:5000/api/chatbot', {
-            user_message: text,
-            history: messages,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_message: text,
+                history: messages,
+            })
         });
 
         // Odbierz odpowiedź od chatbota
