@@ -1,30 +1,35 @@
 import PlaceholderIcon from "../../public/assets/arrow-small-right.svg";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
-import axios from "axios"; // Zamiast "your-client-library" użyj odpowiedniej biblioteki do komunikacji z serwerem
+import { useEffect, useRef, useState } from "react";
+import dynamic from 'next/dynamic'; // Import dynamic z next/dynamic
+
+const ClientOnlyComponent = dynamic(
+  () => import('../path-to-your-client-only-component'), // ścieżka do komponentu używającego useRef
+  { ssr: false } // Włącz wyłączanie Server-Side Rendering (SSR) dla tego komponentu
+);
 
 export default function Page() {
     const endOfMessagesRef = useRef(null);
-    const [message, setMessage] = useClient("");
+    const [message, setMessage] = useState("");
 
     const sendMessageToChatbot = async (userMessage) => {
-    try {
-        const response = await axios.post('http://51.68.155.42:5000/api/chatbot', {
-            user_message: userMessage,
-            history: message,
-        });
+        try {
+            const response = await axios.post('http://51.68.155.42:5000/api/chatbot', {
+                user_message: userMessage,
+                history: message,
+            });
 
-        const { response: chatbotResponse, initial_message: customChatbotMessage } = response.data;
+            const { response: chatbotResponse, initial_message: customChatbotMessage } = response.data;
 
-        // Aktualizacja stanu wiadomości w React
-        setMessage([...message, { text: chatbotResponse, sender: 'other' }]);
+            // Aktualizacja stanu wiadomości w React
+            setMessage([...message, { text: chatbotResponse, sender: 'other' }]);
 
-        // Aktualizacja stanu wiadomości w React dla wiadomości początkowej
-        setMessage([...message, { text: customChatbotMessage, sender: 'other' }]);
-    } catch (error) {
-        console.error('Error sending message to chatbot:', error);
-    }
-};
+            // Aktualizacja stanu wiadomości w React dla wiadomości początkowej
+            setMessage([...message, { text: customChatbotMessage, sender: 'other' }]);
+        } catch (error) {
+            console.error('Error sending message to chatbot:', error);
+        }
+    };
 
     useEffect(() => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,15 +69,10 @@ export default function Page() {
                             }
                         }}
                     />
-                    {/*<span className={"p-3 bg-accentColor rounded-md"}*/}
-                    {/*    onClick={() => {*/}
-                    {/*        sendMessageToChatbot(message.text);*/}
-                    {/*        setMessage({ ...message, text: '' });*/}
-                    {/*    }}*/}
-                    {/*>*/}
-                    {/*    <Image src={PlaceholderIcon} alt={"placeholder-icon"} width={15} height={15} />*/}
-                    {/*</span>*/}
                 </form>
+
+                {/* Wyrenderuj komponent tylko po stronie klienta */}
+                {typeof window !== 'undefined' && <ClientOnlyComponent />}
             </div>
         </section>
     );
