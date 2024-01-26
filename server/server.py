@@ -1,11 +1,11 @@
 from flask import Flask, Blueprint, request, jsonify
-from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from datetime import *
 import openai
+from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://fireplace:I<KrWL;Ii80Ce9j@localhost/fireplacesdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
