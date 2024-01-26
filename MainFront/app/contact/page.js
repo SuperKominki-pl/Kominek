@@ -1,7 +1,7 @@
 import PlaceholderIcon from "../../public/assets/arrow-small-right.svg";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { useClient } from "axios"; // Zamiast "your-client-library" użyj odpowiedniej biblioteki do komunikacji z serwerem
+import axios from "axios"; // Zamiast "your-client-library" użyj odpowiedniej biblioteki do komunikacji z serwerem
 
 export default function Page() {
     const endOfMessagesRef = useRef(null);
