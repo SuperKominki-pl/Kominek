@@ -62,7 +62,7 @@ def get_info(fireplace_id):
             "mode": string z nazwą trybu,
             "status": bool (True -> "On", False -> "Off")
     """
-    fireplace = Fireplace.query.get(fireplace_id)
+    fireplace = db.session.query(Fireplace).get(fireplace_id)
     if fireplace:
         return jsonify(fireplace.to_dict())
     else:
