@@ -8,8 +8,6 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://fireplace:I<KrWL;Ii80Ce9j@localhost/fireplacesdb'
 
-app = Flask(__name__)
-
 # Konfiguracja SQLAlchemy
 user = 'fireplace'
 password = 'I<KrWL;Ii80Ce9j'
