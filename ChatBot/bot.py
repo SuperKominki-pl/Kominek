@@ -56,4 +56,4 @@ def get_initial_message():
 
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='51.68.155.42', debug=True)
