@@ -1,8 +1,13 @@
 from flask import Flask, Blueprint, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import *
-import openai
+from openai import OpenAI
+client = OpenAI(api_key = "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")
 from flask_cors import CORS
+import logging
+
+# Konfiguracja logowania
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -17,7 +22,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{user}:{password}@{host}/{data
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-openai.api_key = ""
+
 
 system_message = """You are customer support for
 problems with using the electric fireplace management application. You are helping
@@ -30,7 +35,8 @@ chatbot_blueprint = Blueprint('chatbot', __name__)
 backend_blueprint = Blueprint('backend', __name__)
 
 
-@chatbot_blueprint.route('/api/chatbot', methods=['POST'])
+@app.route('/api/chatbot', methods=['POST'])
+
 def chatbot_endpoint():
     data = request.json
     user_message = data.get('user_message', '')
@@ -45,26 +51,27 @@ def chatbot_endpoint():
     for human, assistant in history:
         history_openai_format.append({"role": "user", "content": human})
         history_openai_format.append({"role": "assistant", "content": assistant})
+
     history_openai_format.append({"role": "user", "content": user_message})
     history_openai_format.insert(0, {"role": "system", "content": system_message})
 
-    response = openai.ChatCompletion.create(
+    stream = client.chat.completions.create(
         model='gpt-4',
         messages=history_openai_format,
-        temperature=0.5,
-        stop=None,
-        stream=True
+        temperature=0.8,
+	stream=True
+#    	model="gpt-4",
+#    	messages=[{"role": "user", "content": "Say this is a test"}],
     )
 
-    partial_message = ""
-    for chunk in response:
-        if len(chunk['choices'][0]['delta']) != 0:
-            partial_message = partial_message + chunk['choices'][0]['delta']['content']
+#    partial_message = response.choices[0].message
+    #for chunk in response:
+    #    if len(chunk['choices'][0]['delta']) != 0:
+    #        partial_message = partial_message + chunk['choices'][0]['delta']['content']
 
     return jsonify({'response': partial_message, 'initial_message': custom_chatbot_message})
 
-
-@chatbot_blueprint.route('/api/chatbot/initial-message', methods=['GET'])
+@app.route('/api/chatbot/initial-message', methods=['GET'])
 def get_initial_message():
     return jsonify({'initial_message': custom_chatbot_message})
 
@@ -322,6 +329,4 @@ app.register_blueprint(chatbot_blueprint, url_prefix='/api/chatbot')
 app.register_blueprint(backend_blueprint, url_prefix='/api/backend')
 
 if __name__ == '__main__':
-
     app.run(host='51.68.155.42', debug=True)
-
